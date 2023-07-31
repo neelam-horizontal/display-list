@@ -1,0 +1,66 @@
+/* App.css */
+.App {
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-size: 41px;
+  color: #333;
+}
+
+.tabContainer {
+  background-color: rgb(127 195 186 );
+  width: 99vw;
+  padding: 2em 5em;
+  min-height: 40em;
+  height: 63em;
+  margin-bottom: -6em;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  background-color: rgb(209 213 219 );
+  color: rgb(66, 66, 66);
+  border-radius: 0.5rem;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.tabs button:hover {
+  background-color: #ddd;
+}
+
+.tabs button.active {
+  background-color: rgb(73 121 120 );
+  color: #fff;
+}
+
+.data ul {
+  list-style: none;
+  padding: 0;
+}
+
+.data li {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.6;
+  border-radius: 4px;
+}
+
+.data li:last-child {
+  margin-bottom: 0;
+}
+
