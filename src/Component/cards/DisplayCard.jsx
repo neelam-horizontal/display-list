@@ -1,5 +1,4 @@
 import React from "react";
-import "./TabsPage.css";
 
 const DisplayCard = ({ dataLt: { id, title, body } }) => {
   return (

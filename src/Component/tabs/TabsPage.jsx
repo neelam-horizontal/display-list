@@ -1,13 +1,60 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
+import TabsPagination from "./TabsPagination";
+import TabsSearchSort from "./TabsSearchSort";
+import TabsList from "./TabsList";
+
+import {
+  FcAlphabeticalSortingAz,
+  FcAlphabeticalSortingZa,
+} from "react-icons/fc";
+import SearchIcon from "../search.svg";
 import "./TabsPage.css";
 
 const TabsPage = () => {
-  const [activeTab, setActiveTab] = useState("posts");
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const tabs = ["posts", "comments", "albums", "photos", "todos", "users"];
+  const itemsPerPage = 10;
 
-  
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [data, setData] = useState([]);
+
+  const [searchInput, setSearchInput] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  const handleSort = () => {
+    // console.log(activeTab);
+    const sortedList = [...data].sort((a, b) => {
+      if (sortDirection === "asc" && activeTab === "comments") {
+        // console.log(sortDirection);
+        // console.log(activeTab);
+        return a.name.localeCompare(b.name);
+      } else if (sortDirection === "desc" && activeTab === "comments") {
+        // console.log(sortDirection);
+        // console.log(activeTab);
+        return b.name.localeCompare(a.name);
+      } else if (sortDirection === "asc" && activeTab === "users") {
+        // console.log(sortDirection);
+        // console.log(activeTab);
+        return a.name.localeCompare(b.name);
+      } else if (sortDirection === "desc" && activeTab === "users") {
+        // console.log(sortDirection);
+        // console.log(activeTab);
+        return b.name.localeCompare(a.name);
+      } else if (sortDirection === "asc") {
+        // console.log(sortDirection);
+        return a.title.localeCompare(b.title);
+      } else {
+        // console.log(sortDirection);
+        return b.title.localeCompare(a.title);
+      }
+    });
+
+    setData(sortedList);
+    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  };
 
   const fetchData = async (resource) => {
     try {
@@ -15,12 +62,41 @@ const TabsPage = () => {
       const response = await axios.get(
         `https://jsonplaceholder.typicode.com/${resource}`
       );
-      setData(response.data.slice(0, 10));
+      setData(response.data);
       setLoading(false);
-      // console.log(data);
+      setCurrentPage(1);
     } catch (error) {
       setLoading(false);
-      console.error("Error fetching data:", error);
+      // window.location.reload();
+      // console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchInput(value);
+    if (value.length === 0) {
+      fetchData();
+      // window.location.reload();
+    } else if (activeTab === "comments") {
+      // console.log(activeTab);
+      // console.log(value);
+      const result = data.filter((data) => {
+        return data.name.toLowerCase().includes(value);
+      });
+      setData(result);
+    } else if (activeTab === "users") {
+      // console.log(activeTab);
+      // console.log(value);
+      const result = data.filter((data) => {
+        return data.name.toLowerCase().includes(value);
+      });
+      setData(result);
+    } else {
+      const result = data.filter((data) => {
+        return data.title.toLowerCase().includes(value);
+      });
+      setData(result);
     }
   };
 
@@ -31,10 +107,13 @@ const TabsPage = () => {
 
   useEffect(() => {
     fetchData(activeTab);
-    // console.log(activeTab);
-  }, [activeTab]);
-  
+  }, [activeTab, searchInput.length === 0]);
+
   const renderData = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const itemsToRender = data.slice(startIndex, endIndex);
+
     switch (activeTab) {
       case "posts":
         return (
@@ -42,7 +121,7 @@ const TabsPage = () => {
             {loading ? (
               <li style={{ padding: "5em" }}>Loading...</li>
             ) : (
-              data.map((item) => (
+              itemsToRender.map((item) => (
                 <li key={item.id}>
                   <b>Title: </b>
                   {item.title}
@@ -60,7 +139,7 @@ const TabsPage = () => {
             {loading ? (
               <li style={{ padding: "5em" }}>Loading...</li>
             ) : (
-              data.map((item) => (
+              itemsToRender.map((item) => (
                 <li key={item.id}>
                   <b>Name: </b>
                   {item.name}
@@ -81,7 +160,7 @@ const TabsPage = () => {
             {loading ? (
               <li style={{ padding: "5em" }}>Loading...</li>
             ) : (
-              data.map((item) => (
+              itemsToRender.map((item) => (
                 <li key={item.id}>
                   {item.id}. {item.title}
                 </li>
@@ -95,7 +174,7 @@ const TabsPage = () => {
             {loading ? (
               <li style={{ padding: "5em" }}>Loading...</li>
             ) : (
-              data.map((item) => (
+              itemsToRender.map((item) => (
                 <li key={item.id}>
                   <b>Title: </b>
                   {item.title}
@@ -113,7 +192,7 @@ const TabsPage = () => {
             {loading ? (
               <li style={{ padding: "5em" }}>Loading...</li>
             ) : (
-              data.map((item) => (
+              itemsToRender.map((item) => (
                 <li key={item.id}>
                   {item.title}
                   <br />- {item.completed ? "Completed" : "Not Completed"}
@@ -130,12 +209,14 @@ const TabsPage = () => {
             ) : (
               data.map((user) => (
                 <li key={user.id}>
-                  <b>Name: </b>{user.name}
+                  <b>Name: </b>
+                  {user.name}
                   <br />
                   <b>Email: </b> - {user.email}
                   {user.address ? (
                     <ul>
-                      <li><b>Address: </b>
+                      <li>
+                        <b>Address: </b>
                         {user.address.suite}, {user.address.street},{" "}
                         {user.address.city} - {user.address.zipcode}
                       </li>
@@ -155,8 +236,10 @@ const TabsPage = () => {
   };
 
   return (
-    <div className="tabContainer">
-      <div className="tabs">
+    <>
+      <h1>Display Tabs</h1>
+      <div className="tabContainer">
+        {/* <div className="tabs">
         <button
           className={activeTab === "posts" ? "active" : ""}
           onClick={() => handleTabChange("posts")}
@@ -193,10 +276,35 @@ const TabsPage = () => {
         >
           Users
         </button>
-      </div>
+      </div> */}
 
-      <div className="data">{renderData()}</div>
-      {/* <div className="data">
+        <TabsList
+          tabs={tabs}
+          activeTab={activeTab}
+          handleTabChange={handleTabChange}
+        />
+
+        <TabsSearchSort
+          searchInput={searchInput}
+          handleSearch={handleSearch}
+          SearchIcon={SearchIcon}
+          handleSort={handleSort}
+          sortDirection={sortDirection}
+          FcAlphabeticalSortingAz={FcAlphabeticalSortingAz}
+          FcAlphabeticalSortingZa={FcAlphabeticalSortingZa}
+        />
+
+        <div className="data">{renderData()}</div>
+
+        <TabsPagination
+          data={data}
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          setCurrentPage={setCurrentPage}
+        />
+
+        <>
+          {/* <div className="data">
         <ul>
           {data.map((item) => (
             <li key={item.id}>
@@ -251,7 +359,9 @@ const TabsPage = () => {
           ))}
         </ul>
       </div> */}
-    </div>
+        </>
+      </div>
+    </>
   );
 };
 

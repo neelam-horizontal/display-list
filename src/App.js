@@ -1,14 +1,23 @@
 import React from "react";
-import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import TabsPage from "./Component/TabsPage";
-import CardList from "./Component/CardList";
+import TabsPage from "./Component/tabs/TabsPage";
+import CardList from "./Component/cards/CardList";
+import Home from "./Component/Home";
+
+import "./App.css";
 
 const App = () => {
   return (
     <div className="app">
-      <CardList />
-      <TabsPage />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/CardList" element={<CardList />} />
+          <Route path="/TabsPage" element={<TabsPage />} />
+          <Route path="/TabsPage/:activeTab" element={<TabsPage />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 };
