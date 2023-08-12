@@ -82,19 +82,25 @@ const TabsPage = () => {
       // console.log(activeTab);
       // console.log(value);
       const result = data.filter((data) => {
-        return data.name.toLowerCase().includes(value);
+        return (
+          value && data && data.name && data.name.toLowerCase().includes(value)
+        );
       });
       setData(result);
     } else if (activeTab === "users") {
       // console.log(activeTab);
       // console.log(value);
       const result = data.filter((data) => {
-        return data.name.toLowerCase().includes(value);
+        return (
+          value && data && data.name && data.name.toLowerCase().includes(value)
+        );
       });
       setData(result);
     } else {
       const result = data.filter((data) => {
-        return data.title.toLowerCase().includes(value);
+        return (
+          value && data && data.name && data.title.toLowerCase().includes(value)
+        );
       });
       setData(result);
     }
